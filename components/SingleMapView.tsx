@@ -99,8 +99,8 @@ const onEachFeature = (feature: any, layer: L.Layer) => {
 };
 
 const SingleMapView: React.FC<SingleMapViewProps> = ({ baseLayer, onMoveEnd, mapRef }) => {
-  const defaultCenter: [number, number] = [4.8156, 6.9698]; // Niger Delta
-  const defaultZoom = 10;
+  const defaultCenter: [number, number] = [4.55, 8.2]; // Pipeline region
+  const defaultZoom = 12;
   const layer = baseLayers[baseLayer];
   const { layers, imageryLayers } = useGeoJSON();
 

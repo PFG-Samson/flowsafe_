@@ -33,7 +33,7 @@ const MainContent: React.FC = () => {
 
   const handleResetView = () => {
     if (mapRef.current) {
-      mapRef.current.setView([4.8156, 6.9698], 10);
+      mapRef.current.setView([4.55, 8.2], 12);
     }
   };
 
