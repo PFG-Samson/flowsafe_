@@ -1,0 +1,122 @@
+
+import React, { useState } from 'react';
+import { NdviIcon, GridIcon, HomeIcon, Compass, Cloud, Layers, Edit, Ruler, Plus, Minus, BoundingBox, Maximize, Map } from './icons';
+import SingleMapView from './SingleMapView';
+import { BaseLayerType } from '../types';
+
+const MainContent: React.FC = () => {
+  const [baseLayer, setBaseLayer] = useState<BaseLayerType>('satellite');
+  const [showLayerSelector, setShowLayerSelector] = useState(false);
+  const [measureMode, setMeasureMode] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+
+  const handleMapMove = (center: [number, number], zoom: number) => {
+    // Map movement handler - can be used for analytics
+  };
+
+  return (
+    <main className="flex-1 bg-gray-900 relative overflow-hidden">
+      {/* Main Map */}
+      <div className="absolute inset-0">
+        <SingleMapView 
+          baseLayer={baseLayer} 
+          onMoveEnd={handleMapMove}
+        />
+      </div>
+
+      {/* Bottom-left controls */}
+      <div className="absolute bottom-4 left-4 flex flex-col items-start gap-2 z-[1000]" style={{ pointerEvents: 'auto' }}>
+        <div className="flex items-center gap-2">
+            <div className="bg-black/50 text-white text-xs px-2 py-1 rounded">300 m</div>
+            <div className="w-20 h-0.5 bg-white"></div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="bg-[#2d7c9f] p-2 rounded-full text-white shadow-lg hover:bg-blue-500">
+            <NdviIcon className="w-5 h-5" />
+          </button>
+          <button className="bg-[#369258] p-2 rounded-full text-white shadow-lg hover:bg-green-500">
+            <GridIcon className="w-5 h-5" />
+          </button>
+          <button className="bg-[#3b5998] p-2 rounded-full text-white shadow-lg hover:bg-indigo-500">
+            <HomeIcon className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Right-side map controls */}
+      <div className="absolute top-1/2 right-4 -translate-y-1/2 flex flex-col gap-1 bg-gray-800/80 p-1 rounded-md shadow-lg z-[1000]" style={{ pointerEvents: 'auto' }}>
+        <button 
+          className={`p-1.5 hover:bg-gray-700 rounded ${editMode ? 'text-blue-400' : 'text-gray-300'}`}
+          onClick={() => setEditMode(!editMode)}
+          title="Toggle edit mode"
+        >
+          <Edit className="w-5 h-5" />
+        </button>
+        <button 
+          className={`p-1.5 hover:bg-gray-700 rounded ${measureMode ? 'text-blue-400' : 'text-gray-300'}`}
+          onClick={() => setMeasureMode(!measureMode)}
+          title="Toggle measurement tool"
+        >
+          <Ruler className="w-5 h-5" />
+        </button>
+        <div className="h-px bg-gray-600 my-1"></div>
+        <button 
+          className="p-1.5 text-gray-300 hover:bg-gray-700 rounded relative"
+          onClick={() => setShowLayerSelector(!showLayerSelector)}
+          title="Base layer selection"
+        >
+          <Map className="w-5 h-5" />
+        </button>
+        <div className="h-px bg-gray-600 my-1"></div>
+        <button 
+          className="p-1.5 text-gray-300 hover:bg-gray-700 rounded"
+          title="Zoom controls (use mouse wheel)"
+        >
+          <Layers className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Base Layer Selector */}
+      {showLayerSelector && (
+        <div className="absolute top-1/2 right-20 -translate-y-1/2 bg-gray-800/95 p-4 rounded-lg shadow-xl w-64 z-[1001]" style={{ pointerEvents: 'auto' }}>
+          <h3 className="text-white font-semibold text-sm mb-3">Base Layer</h3>
+          
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setBaseLayer('osm');
+                  setShowLayerSelector(false);
+                }}
+                className={`flex-1 px-4 py-3 text-sm rounded-lg ${baseLayer === 'osm' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+              >
+                <div className="font-semibold">OpenStreetMap</div>
+                <div className="text-xs opacity-75">Street map view</div>
+              </button>
+              <button
+                onClick={() => {
+                  setBaseLayer('satellite');
+                  setShowLayerSelector(false);
+                }}
+                className={`flex-1 px-4 py-3 text-sm rounded-lg ${baseLayer === 'satellite' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+              >
+                <div className="font-semibold">Satellite</div>
+                <div className="text-xs opacity-75">Aerial imagery</div>
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowLayerSelector(false)}
+            className="mt-3 w-full px-3 py-2 text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 rounded"
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+    </main>
+  );
+};
+
+export default MainContent;
