@@ -3,6 +3,8 @@ import React, { useState, useRef } from 'react';
 import { LeakIcon, ThermalIcon, PipelineIcon, RadarIcon, AlertTriangle, NdviIcon, Compass, Cloud, Layers, Edit, Ruler, Plus, Minus, Maximize, Map } from './icons';
 import SingleMapView from './SingleMapView';
 import { BaseLayerType } from '../types';
+import { useGeoJSON } from '../contexts/GeoJSONContext';
+import * as L from 'leaflet';
 
 const MainContent: React.FC = () => {
   const [baseLayer, setBaseLayer] = useState<BaseLayerType>('satellite');
@@ -12,6 +14,7 @@ const MainContent: React.FC = () => {
   const [showCloudCover, setShowCloudCover] = useState(false);
   const [activeAnalysis, setActiveAnalysis] = useState<string | null>('leak'); // leak, thermal, pipeline, sar, ndvi
   const mapRef = useRef<any>(null);
+  const { layers } = useGeoJSON();
 
   const handleMapMove = (center: [number, number], zoom: number) => {
     console.log('Map moved to:', center, 'Zoom:', zoom);
@@ -32,7 +35,28 @@ const MainContent: React.FC = () => {
   };
 
   const handleResetView = () => {
-    if (mapRef.current) {
+    if (!mapRef.current) return;
+    
+    // Find the pipeline layer and fit to its bounds
+    const pipelineLayer = layers.find(layer => layer.id === 'pipeline-default');
+    if (pipelineLayer && pipelineLayer.data) {
+      try {
+        const geoJsonLayer = L.geoJSON(pipelineLayer.data);
+        const bounds = geoJsonLayer.getBounds();
+        if (bounds.isValid()) {
+          mapRef.current.fitBounds(bounds, { 
+            padding: [50, 50],
+            maxZoom: 14,
+            animate: true
+          });
+        }
+      } catch (error) {
+        console.error('Error resetting to pipeline view:', error);
+        // Fallback to fixed coordinates
+        mapRef.current.setView([4.55, 8.2], 12);
+      }
+    } else {
+      // Fallback if pipeline layer not found
       mapRef.current.setView([4.55, 8.2], 12);
     }
   };

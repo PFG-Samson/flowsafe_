@@ -41,6 +41,39 @@ const MapInitializer: React.FC = () => {
   return null;
 };
 
+// Component to fit map to pipeline bounds on initial load
+const PipelineBoundsFitter: React.FC = () => {
+  const map = useMap();
+  const { layers } = useGeoJSON();
+
+  useEffect(() => {
+    if (!map || layers.length === 0) return;
+
+    // Find the pipeline layer
+    const pipelineLayer = layers.find(layer => layer.id === 'pipeline-default');
+    if (!pipelineLayer || !pipelineLayer.data) return;
+
+    try {
+      // Create a temporary GeoJSON layer to calculate bounds
+      const geoJsonLayer = L.geoJSON(pipelineLayer.data);
+      const bounds = geoJsonLayer.getBounds();
+      
+      if (bounds.isValid()) {
+        // Fit map to pipeline bounds with padding
+        map.fitBounds(bounds, { 
+          padding: [50, 50],
+          maxZoom: 14,
+          animate: false // No animation on initial load
+        });
+      }
+    } catch (error) {
+      console.error('Error fitting to pipeline bounds:', error);
+    }
+  }, [map, layers]);
+
+  return null;
+};
+
 const MapEventHandler: React.FC<{ 
   onMoveEnd?: (center: [number, number], zoom: number) => void;
   mapRef?: React.MutableRefObject<any>;
@@ -124,6 +157,7 @@ const SingleMapView: React.FC<SingleMapViewProps> = ({ baseLayer, onMoveEnd, map
         key={baseLayer}
       />
       <MapInitializer />
+      <PipelineBoundsFitter />
       <MapEventHandler onMoveEnd={onMoveEnd} mapRef={mapRef} />
       
       {/* Render GeoTIFF Imagery Layers */}
