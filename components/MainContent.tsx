@@ -46,7 +46,7 @@ const MainContent: React.FC = () => {
         if (bounds.isValid()) {
           mapRef.current.fitBounds(bounds, { 
             padding: [50, 50],
-            maxZoom: 14,
+            maxZoom: 16,
             animate: true
           });
         }

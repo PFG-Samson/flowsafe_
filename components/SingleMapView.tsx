@@ -62,7 +62,7 @@ const PipelineBoundsFitter: React.FC = () => {
         // Fit map to pipeline bounds with padding
         map.fitBounds(bounds, { 
           padding: [50, 50],
-          maxZoom: 14,
+          maxZoom: 16,
           animate: false // No animation on initial load
         });
       }
